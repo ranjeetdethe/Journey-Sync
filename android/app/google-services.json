@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567833158391",
+    "project_id": "journey-sync-782fc",
+    "storage_bucket": "journey-sync-782fc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567833158391:android:68b410ac6bbae7f44ae9f2",
+        "android_client_info": {
+          "package_name": "com.example.travel_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeb5Dp6cI3xLysbs7CyJdUzkl7jzKcOsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
