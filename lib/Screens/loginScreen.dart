@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_media_buttons/social_media_buttons.dart';
 import 'package:travel_manager/Screen2/db_helper.dart';
 import 'package:travel_manager/Screen2/home_screen.dart';
-// Import your HomePage file
+import 'package:cloud_firestore/cloud_firestore.dart'; // Add this import
 import 'forgotpassword.dart'; // Import Forgot Password Page
 import 'signUpScreen.dart'; // Import Sign-Up Page
 
@@ -40,15 +40,33 @@ class _LoginPageState extends State<LoginPage> {
         User? user = userCredential.user;
 
         if (user != null) {
+          // Store user data in Firestore
+          final _firestore = FirebaseFirestore.instance;
+          String userId = user.uid;
           Map<String, dynamic> userData = {
+            'name': user.displayName ??
+                _emailController.text.split('@')[0], // Default name from email
+            'photoUrl': 'https://via.placeholder.com/50', // Default avatar
+            'userId': userId, // Store the userId for consistency
+          };
+
+          // Save to Firestore
+          await _firestore
+              .collection('users')
+              .doc(userId)
+              .set(userData, SetOptions(merge: true));
+
+          // Save to local SQLite database (existing code)
+          Map<String, dynamic> localUserData = {
             'id': user.uid,
             'name': user.displayName ?? 'N/A',
             'email': user.email!,
             'created_at': DateTime.now().toIso8601String(),
           };
 
-          await DBHelper().insertUser(userData);
+          await DBHelper().insertUser(localUserData);
 
+          // Navigate to MyHomePage
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

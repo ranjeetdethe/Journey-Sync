@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:travel_manager/ChatModule/chat_messages_page.dart';
 
 class TripCreationPage extends StatefulWidget {
-  const TripCreationPage({super.key});
+  final String userId;
+  const TripCreationPage({super.key, required this.userId});
 
   @override
   _TripCreationPageState createState() => _TripCreationPageState();
@@ -18,6 +20,8 @@ class _TripCreationPageState extends State<TripCreationPage> {
   final _numberOfPeopleController = TextEditingController();
   final _budgetController = TextEditingController();
 
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _tripNameController.dispose();
@@ -31,6 +35,9 @@ class _TripCreationPageState extends State<TripCreationPage> {
 
   void _createTrip() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       try {
         final tripName = _tripNameController.text.trim();
         final from = _fromController.text.trim();
@@ -39,21 +46,30 @@ class _TripCreationPageState extends State<TripCreationPage> {
         final numberOfPeople = int.parse(_numberOfPeopleController.text.trim());
         final budget = double.parse(_budgetController.text.trim());
 
-        // Parse the date string into a DateTime object
         DateTime parsedDate = DateTime.parse(date);
 
-        // Add trip data to Firebase Firestore
-        await FirebaseFirestore.instance.collection('trips').add({
+        DocumentReference tripRef =
+            await FirebaseFirestore.instance.collection('trips').add({
           'tripName': tripName,
-          'from': from, // Origin location
+          'from': from,
           'destination': destination,
-          'date': Timestamp.fromDate(parsedDate), // Store as Timestamp
+          'date': Timestamp.fromDate(parsedDate),
           'numberOfPeople': numberOfPeople,
           'budget': budget,
           'createdAt': FieldValue.serverTimestamp(),
+          'creatorId': widget.userId,
         });
 
-        // Clear the text fields after trip creation
+        await FirebaseFirestore.instance.collection('chat_groups').add({
+          'tripId': tripRef.id,
+          'tripName': tripName,
+          'creatorId': widget.userId,
+          'members': [widget.userId],
+          'admins': [widget.userId],
+          'maxMembers': numberOfPeople,
+          'createdAt': Timestamp.now(),
+        });
+
         _tripNameController.clear();
         _fromController.clear();
         _destinationController.clear();
@@ -64,12 +80,49 @@ class _TripCreationPageState extends State<TripCreationPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Trip Created Successfully!')),
         );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagesPage(userId: widget.userId),
+          ),
+        );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error creating trip: $e')),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
+  }
+
+  InputDecoration _buildInputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Color.fromRGBO(255, 112, 41, 1)),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+    );
   }
 
   @override
@@ -97,56 +150,35 @@ class _TripCreationPageState extends State<TripCreationPage> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _tripNameController,
-                          decoration: const InputDecoration(
-                            labelText: "Trip Name",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.drive_file_rename_outline),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a trip name';
-                            }
-                            return null;
-                          },
+                          decoration: _buildInputDecoration(
+                              "Trip Name", Icons.drive_file_rename_outline),
+                          validator: (value) => value?.isEmpty ?? true
+                              ? 'Please enter a trip name'
+                              : null,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _fromController,
-                          decoration: const InputDecoration(
-                            labelText: "From (Origin)",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.location_on_outlined),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter an origin location';
-                            }
-                            return null;
-                          },
+                          decoration: _buildInputDecoration(
+                              "From (Origin)", Icons.location_on_outlined),
+                          validator: (value) => value?.isEmpty ?? true
+                              ? 'Please enter an origin location'
+                              : null,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _destinationController,
-                          decoration: const InputDecoration(
-                            labelText: "Destination",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.location_on),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a destination';
-                            }
-                            return null;
-                          },
+                          decoration: _buildInputDecoration(
+                              "Destination", Icons.location_on),
+                          validator: (value) => value?.isEmpty ?? true
+                              ? 'Please enter a destination'
+                              : null,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _dateController,
-                          decoration: const InputDecoration(
-                            labelText: "Trip Date",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.calendar_today),
-                          ),
+                          decoration: _buildInputDecoration(
+                              "Trip Date", Icons.calendar_today),
                           onTap: () async {
                             DateTime? pickedDate = await showDatePicker(
                               context: context,
@@ -159,67 +191,60 @@ class _TripCreationPageState extends State<TripCreationPage> {
                                   pickedDate.toString().substring(0, 10);
                             }
                           },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a date';
-                            }
-                            return null;
-                          },
+                          validator: (value) => value?.isEmpty ?? true
+                              ? 'Please select a date'
+                              : null,
                           readOnly: true,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _numberOfPeopleController,
-                          decoration: const InputDecoration(
-                            labelText: "Number of People",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.people),
-                          ),
+                          decoration: _buildInputDecoration(
+                              "Number of People", Icons.people),
                           keyboardType: TextInputType.number,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null || value.isEmpty)
                               return 'Please enter the number of people';
-                            }
-                            if (int.tryParse(value) == null) {
-                              return 'Enter a valid number';
-                            }
+                            int? number = int.tryParse(value);
+                            if (number == null || number < 1)
+                              return 'Enter at least 1 person';
                             return null;
                           },
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _budgetController,
-                          decoration: const InputDecoration(
-                            labelText: "Budget (Approximate)",
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.currency_rupee_sharp),
-                          ),
+                          decoration: _buildInputDecoration(
+                              "Budget (Approximate)",
+                              Icons.currency_rupee_sharp),
                           keyboardType: TextInputType.number,
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
+                            if (value == null || value.isEmpty)
                               return 'Please enter an approximate budget';
-                            }
-                            if (double.tryParse(value) == null) {
-                              return 'Enter a valid amount';
-                            }
+                            double? budget = double.tryParse(value);
+                            if (budget == null || budget <= 0)
+                              return 'Enter a valid budget greater than 0';
                             return null;
                           },
                         ),
                         const SizedBox(height: 20),
                         Center(
                           child: ElevatedButton(
-                            onPressed: _createTrip,
+                            onPressed: _isLoading ? null : _createTrip,
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   const Color.fromRGBO(255, 112, 41, 1),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 15),
                             ),
-                            child: const Text(
-                              'Create Trip',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text(
+                                    'Create Trip',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
                           ),
                         ),
                       ],

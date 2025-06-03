@@ -14,14 +14,11 @@ void main() async {
       projectId: "journey-sync-782fc",
     ),
   );
-
-  // Run the app
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(

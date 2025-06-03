@@ -6,10 +6,11 @@ import 'package:travel_manager/Screen2/message_page.dart';
 class ChatListScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  ChatListScreen({super.key});
+  ChatListScreen({super.key, required String userId});
 
   Future<void> logout(BuildContext context) async {
     await _auth.signOut();
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
   }
 

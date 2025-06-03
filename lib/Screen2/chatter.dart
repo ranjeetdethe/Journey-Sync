@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,7 +38,7 @@ class _ChatterScreenState extends State<ChatterScreen> {
         });
       }
     } catch (e) {
-      print('Error getting user: $e');
+      log('Error getting user: $e');
     }
   }
 
@@ -94,7 +96,7 @@ class _ChatterScreenState extends State<ChatterScreen> {
                 backgroundImage: const NetworkImage(
                     "https://cdn.clipart.email/93ce84c4f719bd9a234fb92ab331bec4_frisco-specialty-clinic-vail-health_480-480.png"),
                 onBackgroundImageError: (_, __) {
-                  print("Error loading profile picture");
+                  log("Error loading profile picture");
                 },
               ),
             ),

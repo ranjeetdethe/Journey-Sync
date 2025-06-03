@@ -58,13 +58,14 @@ class MessagingScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatScreenn(
+                        builder: (context) => ChatScreen(
                           senderUserEmail: 'abhishek@gmail.com',
                           senderUserId: 'user123',
                           senderType: 'user',
                           recipientName: chatNames[
                               index], // Pass the chat name dynamically
-                          recipientPhone: '9325128750',
+                          recipientPhone: '9325128750', userId: '',
+                          tripName: '', tripId: '',
                         ),
                       ),
                     );

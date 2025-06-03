@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -44,11 +46,11 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {
           loggedInUser = user;
         });
-        print('Email: ${loggedInUser?.email}');
-        print('Display Name: ${loggedInUser?.displayName}');
+        log('Email: ${loggedInUser?.email}');
+        log('Display Name: ${loggedInUser?.displayName}');
       }
     } catch (e) {
-      print('Error retrieving user: $e');
+      log('Error retrieving user: $e');
     }
   }
 
@@ -56,23 +58,22 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: null,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () async {
-              try {
-                await _auth.signOut();
-                Navigator.pop(context);
-              } catch (e) {
-                print('Error logging out: $e');
-              }
-            },
-          ),
-        ],
-        title: const Text('⚡️Chat'),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
+          leading: null,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () async {
+                try {
+                  await _auth.signOut();
+                  Navigator.pop(context);
+                } catch (e) {
+                  log('Error logging out: $e');
+                }
+              },
+            ),
+          ],
+          title: const Text('Chats'),
+          backgroundColor: Colors.deepOrangeAccent),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

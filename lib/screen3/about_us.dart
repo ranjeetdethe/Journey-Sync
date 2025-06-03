@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:social_media_buttons/social_media_buttons.dart';
-import 'package:travel_manager/screen3/thank_you.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutUsScreen extends StatelessWidget {
@@ -52,32 +51,49 @@ class AboutUsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Name: Ranjeet Dethe',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                'Phone: 8999073518',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 5),
-              const Text(
                 'Name: Abhishek Dere',
                 style: TextStyle(fontSize: 16),
               ),
               const Text(
-                'Phone: 9325128450',
+                'Phone: 9325128750',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 5),
               const Text(
-                'Name: Abhay Gaikwad',
+                'Name: Aryan Kulkarani',
+                style: TextStyle(fontSize: 16),
+              ),
+              const Text(
+                'Phone: 8925128450',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 5),
+              const Text(
+                'Name: Saniket Kadam',
                 style: TextStyle(fontSize: 16),
               ),
               const Text(
                 'Phone: 8767994375',
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
+              const Text(
+                'Name: Dinesh Dukare',
+                style: TextStyle(fontSize: 16),
+              ),
+              const Text(
+                'Phone: 899674799',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Name: Paurnima Deshmukh',
+                style: TextStyle(fontSize: 16),
+              ),
+              const Text(
+                'Phone: 899674799',
+                style: TextStyle(fontSize: 16),
+              ),
 
               // Social Media links section
               const Text(
@@ -118,22 +134,22 @@ class AboutUsScreen extends StatelessWidget {
                   const SizedBox(
                     width: 10,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      // Navigate to ThankYouScreen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ThankYouPage(),
-                        ),
-                      );
-                    },
-                    child: Image.asset(
-                      'assets/images/logo.jpg',
-                      width: 40,
-                      height: 40,
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     // Navigate to ThankYouScreen
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => ThankYouPage(),
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: Image.asset(
+                  //     'assets/images/logo.jpg',
+                  //     width: 40,
+                  //     height: 40,
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 16),
