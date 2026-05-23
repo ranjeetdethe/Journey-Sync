@@ -14,7 +14,7 @@ void main() async {
       projectId: "journey-sync-782fc",
     ),
   );
-  runApp(const MyApp());
+  runApp(const MyApp());    
 }
 
 class MyApp extends StatelessWidget {

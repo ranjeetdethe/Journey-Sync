@@ -50,6 +50,7 @@ flutter:
     - assets/images/tokyo.jpg
     - assets/images/rome.jpg
     - assets/images/sydney.jpg
+    - assets/images/akshaysir.jpg
 
 flutter_launcher_icons:
   android: "app_icon"

@@ -129,7 +129,10 @@ class _TripCreationPageState extends State<TripCreationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Trip'),
+        title: const Text('Create Trip                                     ',
+            style: TextStyle(fontSize: 24, color: Colors.black)),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         backgroundColor: const Color.fromRGBO(255, 112, 41, 1),
       ),
       body: SafeArea(

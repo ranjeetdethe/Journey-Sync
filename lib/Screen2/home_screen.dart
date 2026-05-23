@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:travel_manager/ChatModule/chat_messages_page.dart';
 import 'package:travel_manager/Screen2/chatlist.dart';
 import 'package:travel_manager/Screen2/notification_screen.dart';
 import 'package:travel_manager/Screen2/view_all.dart';
@@ -27,7 +28,8 @@ class _HomePageState extends State<MyHomePage> {
     HomePageContent(userId: widget.userId),
     TripCreationPage(userId: widget.userId),
     TripListPage(userId: widget.userId),
-    ChatListScreen(userId: widget.userId),
+    MessagesPage(
+        userId: widget.userId), // Replaced ChatListScreen with MessagesPage
     ProfileScreen(userId: widget.userId),
   ];
 
@@ -909,7 +911,7 @@ class DestinationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${price.toStringAsFixed(2)}/Person',
+                    '₹${price.toStringAsFixed(2)}/Person',
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       color: const Color.fromRGBO(255, 112, 41, 1),
@@ -1067,7 +1069,7 @@ class DestinationDetailScreen extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        '\$${price.toStringAsFixed(2)}/Person',
+                        '\₹${price.toStringAsFixed(2)}/Person',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,

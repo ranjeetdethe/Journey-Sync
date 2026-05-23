@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Added for date formatting
 
 class ChatScreen extends StatefulWidget {
   final String userId;
@@ -13,11 +14,11 @@ class ChatScreen extends StatefulWidget {
     required this.userId,
     required this.tripId,
     required this.tripName,
-    required String senderUserEmail,
-    required String senderUserId,
-    required String senderType,
-    required String recipientPhone,
-    required String recipientName,
+    required String senderUserEmail, // Not used in current code
+    required String senderUserId, // Not used, redundant with userId
+    required String senderType, // Not used in current code
+    required String recipientPhone, // Not used in current code
+    required String recipientName, // Not used in current code
   });
 
   @override
@@ -27,6 +28,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
 
   void _sendMessage() async {
     if (_messageController.text.trim().isEmpty) return;
@@ -70,10 +73,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // Function to handle search action
+  void _startSearch() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void _stopSearch() {
+    setState(() {
+      _isSearching = false;
+      _searchController.clear();
+    });
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -81,7 +99,21 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.tripName),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search messages...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  setState(() {}); // Trigger rebuild to filter messages
+                },
+              )
+            : Text(widget.tripName),
         backgroundColor: const Color.fromRGBO(255, 112, 41, 1),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -89,6 +121,17 @@ class _ChatScreenState extends State<ChatScreen> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          _isSearching
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: _stopSearch,
+                )
+              : IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: _startSearch,
+                ),
+        ],
       ),
       body: Column(
         children: [
@@ -128,6 +171,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     }
 
                     final messages = snapshot.data!.docs;
+                    final searchQuery = _searchController.text.toLowerCase();
+
+                    // Filter messages based on search query
+                    final filteredMessages = _isSearching
+                        ? messages.where((doc) {
+                            final message = doc.data() as Map<String, dynamic>;
+                            final text = (message['text'] as String? ?? '')
+                                .toLowerCase();
+                            return text.contains(searchQuery);
+                          }).toList()
+                        : messages;
 
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _scrollToBottom();
@@ -137,11 +191,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       controller: _scrollController,
                       reverse: true,
                       padding: const EdgeInsets.all(16.0),
-                      itemCount: messages.length,
+                      itemCount: filteredMessages.length,
                       itemBuilder: (context, index) {
-                        final message =
-                            messages[index].data() as Map<String, dynamic>;
+                        final message = filteredMessages[index].data()
+                            as Map<String, dynamic>;
                         final isMe = message['senderId'] == widget.userId;
+                        final timestamp = message['timestamp'] as Timestamp?;
 
                         return Align(
                           alignment: isMe
@@ -156,11 +211,30 @@ class _ChatScreenState extends State<ChatScreen> {
                                   : Colors.grey[300],
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
-                              message['text'],
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: isMe
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message['text'],
+                                  style: TextStyle(
+                                    color: isMe ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  timestamp != null
+                                      ? DateFormat('hh:mm a, MMM d')
+                                          .format(timestamp.toDate())
+                                      : 'Unknown time',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color:
+                                        isMe ? Colors.white70 : Colors.black54,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );

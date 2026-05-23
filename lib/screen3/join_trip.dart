@@ -114,19 +114,11 @@ class TripListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trips List'),
+        centerTitle: true,
+        title: const Text('Trips List                                         ',
+            style: TextStyle(fontSize: 24, color: Colors.black)),
         backgroundColor: const Color.fromRGBO(255, 112, 41, 1),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MyHomePage(userId: userId),
-              ),
-            );
-          },
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
